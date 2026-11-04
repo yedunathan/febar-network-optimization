@@ -1,0 +1,29 @@
+# Northstar Network Optimization — out-of-route freight leakage, end to end on Databricks.
+# Deploy:  databricks bundle deploy -t dev --profile <profile>
+# Run:     databricks bundle run netopt_end_to_end -t dev --profile <profile>
+bundle:
+  name: northstar-network-optimization
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Unity Catalog catalog that holds every layer
+    default: cpg_demos
+  warehouse_id:
+    description: Serverless SQL warehouse for governance/ai_query statements and the app
+    default: d190b568810b2c60
+  genie_space_id:
+    description: Genie Agent created by genie/build_space.py
+    default: 01f1d7f11a781c048853f64b3936a998
+  lakebase_project:
+    description: Lakebase Autoscaling project serving the operational tables
+    default: network-opt
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://fe-vm-vdm-serverless-jpckvw.cloud.databricks.com

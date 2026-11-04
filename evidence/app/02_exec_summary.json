@@ -1,0 +1,221 @@
+{
+ "month": "2026-04",
+ "window_start": "2025-05",
+ "kpis": {
+  "planned_lanes": "187",
+  "total_freight": "7154747.0",
+  "on_plan_pct": "40.2",
+  "month_oor_freight": "4275367.0",
+  "month_oor_pct": "59.8",
+  "n_materials": "2081",
+  "oor_impact": "2218070.0",
+  "yearly_impact": "2.3591058E7",
+  "yearly_freight": "7.7255489E7",
+  "yearly_oor_freight": "4.1160447E7",
+  "yearly_oor_pct": "53.3",
+  "n_plants": 55
+ },
+ "trend": [
+  {
+   "year_month": "2025-01",
+   "total_freight": "6548555.0",
+   "oor_freight": "1827071.0",
+   "oor_pct": "27.9"
+  },
+  {
+   "year_month": "2025-02",
+   "total_freight": "7251211.0",
+   "oor_freight": "2262909.0",
+   "oor_pct": "31.2"
+  },
+  {
+   "year_month": "2025-03",
+   "total_freight": "7805777.0",
+   "oor_freight": "2527382.0",
+   "oor_pct": "32.4"
+  },
+  {
+   "year_month": "2025-04",
+   "total_freight": "7653974.0",
+   "oor_freight": "2815068.0",
+   "oor_pct": "36.8"
+  },
+  {
+   "year_month": "2025-05",
+   "total_freight": "7713135.0",
+   "oor_freight": "2987674.0",
+   "oor_pct": "38.7"
+  }
+ ],
+ "planned_lanes": [
+  {
+   "directed_lane_id": "2501-2547",
+   "origin_plant": "2501",
+   "dest_plant": "2547",
+   "origin_lat": "43.1566",
+   "origin_lon": "-77.6088",
+   "dest_lat": "40.5187",
+   "dest_lon": "-74.4121",
+   "total_cases": "15488",
+   "freight_usd": "12954.0"
+  },
+  {
+   "directed_lane_id": "2502-2550",
+   "origin_plant": "2502",
+   "dest_plant": "2550",
+   "origin_lat": "39.7589",
+   "origin_lon": "-84.1916",
+   "dest_lat": "35.2271",
+   "dest_lon": "-80.8431",
+   "total_cases": "24616",
+   "freight_usd": "30394.0"
+  },
+  {
+   "directed_lane_id": "2506-2553",
+   "origin_plant": "2506",
+   "dest_plant": "2553",
+   "origin_lat": "35.0456",
+   "origin_lon": "-85.3097",
+   "dest_lat": "35.1495",
+   "dest_lon": "-90.049",
+   "total_cases": "15627",
+   "freight_usd": "16478.0"
+  },
+  {
+   "directed_lane_id": "2507-2548",
+   "origin_plant": "2507",
+   "dest_plant": "2548",
+   "origin_lat": "41.525",
+   "origin_lon": "-88.0817",
+   "dest_lat": "39.0997",
+   "dest_lon": "-94.5786",
+   "total_cases": "41447",
+   "freight_usd": "48394.0"
+  },
+  {
+   "directed_lane_id": "2507-2551",
+   "origin_plant": "2507",
+   "dest_plant": "2551",
+   "origin_lat": "41.525",
+   "origin_lon": "-88.0817",
+   "dest_lat": "39.9612",
+   "dest_lon": "-82.9988",
+   "total_cases": "39420",
+   "freight_usd": "30017.0"
+  }
+ ],
+ "top_oor": [
+  {
+   "directed_lane_id": "2508-2552",
+   "origin_plant": "2508",
+   "dest_plant": "2552",
+   "impact": "63256.0",
+   "total_cases": "27629",
+   "origin_lat": "45.8838",
+   "origin_lon": "-72.4843",
+   "dest_lat": "44.8041",
+   "dest_lon": "-93.1669"
+  },
+  {
+   "directed_lane_id": "2503-2548",
+   "origin_plant": "2503",
+   "dest_plant": "2548",
+   "impact": "22979.0",
+   "total_cases": "15372",
+   "origin_lat": "26.2034",
+   "origin_lon": "-98.23",
+   "dest_lat": "39.0997",
+   "dest_lon": "-94.5786"
+  },
+  {
+   "directed_lane_id": "2502-2553",
+   "origin_plant": "2502",
+   "dest_plant": "2553",
+   "impact": "24316.0",
+   "total_cases": "27538",
+   "origin_lat": "39.7589",
+   "origin_lon": "-84.1916",
+   "dest_lat": "35.1495",
+   "dest_lon": "-90.049"
+  },
+  {
+   "directed_lane_id": "2555-2544",
+   "origin_plant": "2555",
+   "dest_plant": "2544",
+   "impact": "22986.0",
+   "total_cases": "446",
+   "origin_lat": "39.2904",
+   "origin_lon": "-76.6122",
+   "dest_lat": "47.3809",
+   "dest_lon": "-122.2348"
+  },
+  {
+   "directed_lane_id": "2551-2543",
+   "origin_plant": "2551",
+   "dest_plant": "2543",
+   "impact": "31186.0",
+   "total_cases": "1316",
+   "origin_lat": "39.9612",
+   "origin_lon": "-82.9988",
+   "dest_lat": "34.0633",
+   "dest_lon": "-117.6509"
+  }
+ ],
+ "plants": [
+  {
+   "plant_s4": "2563",
+   "plant_name": "Salt Lake Ext DC",
+   "plant_type": "EXT_DC",
+   "city": "Salt Lake City",
+   "region": "UT",
+   "lat": "40.7608",
+   "lon": "-111.891",
+   "throughput": "365251",
+   "top_families": "Pizza Crust, Icing & Glaze"
+  },
+  {
+   "plant_s4": "2592",
+   "plant_name": "Boise Partner",
+   "plant_type": "EXT_VP",
+   "city": "Boise",
+   "region": "ID",
+   "lat": "43.615",
+   "lon": "-116.2023",
+   "throughput": "85680",
+   "top_families": null
+  },
+  {
+   "plant_s4": "2560",
+   "plant_name": "Houston Ext DC",
+   "plant_type": "EXT_DC",
+   "city": "Houston",
+   "region": "TX",
+   "lat": "29.7604",
+   "lon": "-95.3698",
+   "throughput": "311808",
+   "top_families": "Toppings, Sweet Dough"
+  },
+  {
+   "plant_s4": "2503",
+   "plant_name": "McAllen Plant",
+   "plant_type": "MFG",
+   "city": "McAllen",
+   "region": "TX",
+   "lat": "26.2034",
+   "lon": "-98.23",
+   "throughput": "2615618",
+   "top_families": "Pizza Crust, Cakes & Desserts, Sweet Dough"
+  },
+  {
+   "plant_s4": "2572",
+   "plant_name": "Oklahoma City Ext DC",
+   "plant_type": "EXT_DC",
+   "city": "Oklahoma City",
+   "region": "OK",
+   "lat": "35.4676",
+   "lon": "-97.5164",
+   "throughput": "856303",
+   "top_families": "Rolls & Biscuits, Cakes & Desserts, Icing & Glaze"
+  }
+ ]
+}

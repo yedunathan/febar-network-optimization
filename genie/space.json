@@ -1,0 +1,304 @@
+{
+ "version": 2,
+ "config": {
+  "sample_questions": [
+   {
+    "id": "10000000000000000000000000000001",
+    "question": [
+     "How much did out-of-route freight cost us in excess of plan over the last 3 months?"
+    ]
+   },
+   {
+    "id": "10000000000000000000000000000002",
+    "question": [
+     "Which 10 lanes have the highest expected monthly leakage?"
+    ]
+   },
+   {
+    "id": "10000000000000000000000000000003",
+    "question": [
+     "Which product families drive the most costly out-of-route moves?"
+    ]
+   },
+   {
+    "id": "10000000000000000000000000000004",
+    "question": [
+     "What actions are recommended for the high risk lanes?"
+    ]
+   }
+  ]
+ },
+ "data_sources": {
+  "tables": [
+   {
+    "identifier": "cpg_demos.netopt_gold.lane_action_queue",
+    "column_configs": [
+     {
+      "column_name": "action_type",
+      "description": [
+       "GenAI recommended action: REROUTE_TO_PLAN, CONSOLIDATE_LOADS, FIX_MRP_PLAN, RENEGOTIATE_RATE, MONITOR"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     },
+     {
+      "column_name": "recommendation",
+      "description": [
+       "GenAI (ai_query) planner recommendation text"
+      ]
+     },
+     {
+      "column_name": "risk_tier",
+      "description": [
+       "ML risk tier HIGH / MEDIUM / LOW"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     }
+    ]
+   },
+   {
+    "identifier": "cpg_demos.netopt_gold.lane_material_sot",
+    "column_configs": [
+     {
+      "column_name": "dest_name",
+      "description": [
+       "Destination plant / DC name"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     },
+     {
+      "column_name": "dest_type",
+      "description": [
+       "Node type: MFG, INT_DC, EXT_DC, VDC, EXT_VP, OUTLET, ECOM, CORP"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     },
+     {
+      "column_name": "lane_type",
+      "description": [
+       "planned_transport | out_of_lane_transport (OOR, out-of-route) | theoretical_transport"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     },
+     {
+      "column_name": "origin_name",
+      "description": [
+       "Origin plant / DC name"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     },
+     {
+      "column_name": "origin_type",
+      "description": [
+       "Node type: MFG, INT_DC, EXT_DC, VDC, EXT_VP, OUTLET, ECOM, CORP"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     }
+    ]
+   },
+   {
+    "identifier": "cpg_demos.netopt_gold.lane_watchlist",
+    "column_configs": [
+     {
+      "column_name": "risk_tier",
+      "description": [
+       "ML risk tier HIGH / MEDIUM / LOW"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     }
+    ]
+   },
+   {
+    "identifier": "cpg_demos.netopt_gold.material_routes",
+    "column_configs": [
+     {
+      "column_name": "category",
+      "description": [
+       "Planned + Happened | Happened Not Planned | Planned Not Happened | Loop"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     }
+    ]
+   },
+   {
+    "identifier": "cpg_demos.netopt_gold.oor_analysis",
+    "column_configs": [
+     {
+      "column_name": "drill_tab",
+      "description": [
+       "costly_oor (cost more than plan) | cheaper_oor | no_baseline | loops"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     },
+     {
+      "column_name": "family",
+      "description": [
+       "Product family"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     }
+    ]
+   },
+   {
+    "identifier": "cpg_demos.netopt_gold.oor_risk_scores",
+    "column_configs": [
+     {
+      "column_name": "family",
+      "description": [
+       "Product family"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     }
+    ]
+   },
+   {
+    "identifier": "cpg_demos.netopt_gold.plant_stats",
+    "column_configs": [
+     {
+      "column_name": "plant_name",
+      "description": [
+       "Plant / DC name"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     },
+     {
+      "column_name": "plant_type",
+      "description": [
+       "Node type"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     }
+    ]
+   },
+   {
+    "identifier": "cpg_demos.netopt_silver.enterprise_material_master",
+    "column_configs": [
+     {
+      "column_name": "family",
+      "description": [
+       "Product family"
+      ],
+      "enable_format_assistance": true,
+      "enable_entity_matching": true
+     }
+    ]
+   }
+  ]
+ },
+ "instructions": {
+  "text_instructions": [
+   {
+    "id": "30000000000000000000000000000001",
+    "content": [
+     "This agent analyses freight out-of-route (OOR) cost leakage for Northstar Frozen Foods (fictional frozen bakery manufacturer; all data synthetic).\n",
+     "Key concepts:\n",
+     "- lane_material_sot: one row per directed lane x material x month. lane_type: planned_transport (shipped as planned), out_of_lane_transport (shipped but NOT in the MRP plan = out-of-route / OOR), theoretical_transport (planned, never shipped). Exclude material_number = 'SHUTTLE' (private fleet) unless asked.\n",
+     "- directed_lane_id is ORIGIN-DEST plant codes, e.g. 2501-2542. Plant names/types are in plant_stats (plant_s4) or in origin_name/dest_name.\n",
+     "- oor_analysis: OOR rows vs planned baseline. total_cost_impact = extra USD vs plan (positive = leakage). \"Leakage\" or \"wasted freight\" = SUM(total_cost_impact) WHERE drill_tab = 'costly_oor'.\n",
+     "- material_routes: reconstructed end-to-end routes; category in ('Planned + Happened','Happened Not Planned','Planned Not Happened','Loop').\n",
+     "- oor_risk_scores: ML model (oor_cost_risk@champion) scores per OOR row: p_costly = probability the move costs more than plan, expected_leakage_usd = predicted leakage.\n",
+     "- lane_watchlist: trailing-3-month lane-level ML risk; lane_action_queue: top-risk lanes with GenAI recommended action_type, recommendation and action_owner.\n",
+     "- year_month is a string 'YYYY-MM' from 2025-01 to 2026-04; \"latest month\" = max(year_month) with freight.\n",
+     "Always include directed_lane_id when answering about lanes and round dollars to whole numbers. Keep answers concise.\n"
+    ]
+   }
+  ],
+  "example_question_sqls": [
+   {
+    "id": "20000000000000000000000000000001",
+    "question": [
+     "What was total out-of-route freight leakage by month?"
+    ],
+    "sql": [
+     "SELECT year_month, ROUND(SUM(total_cost_impact), 0) AS leakage_usd, COUNT(*) AS costly_oor_rows FROM cpg_demos.netopt_gold.oor_analysis WHERE drill_tab = 'costly_oor' GROUP BY year_month ORDER BY year_month"
+    ]
+   },
+   {
+    "id": "20000000000000000000000000000002",
+    "question": [
+     "Which lanes have the highest expected monthly leakage according to the ML model?"
+    ],
+    "sql": [
+     "SELECT directed_lane_id, origin_name, dest_name, risk_tier, avg_p_costly, expected_monthly_leakage_usd, realized_leakage_usd FROM cpg_demos.netopt_gold.lane_watchlist ORDER BY expected_monthly_leakage_usd DESC LIMIT 10"
+    ]
+   },
+   {
+    "id": "20000000000000000000000000000003",
+    "question": [
+     "What share of shipped cases moved out of route in the latest month?"
+    ],
+    "sql": [
+     "WITH m AS (SELECT MAX(year_month) AS ym FROM cpg_demos.netopt_gold.lane_material_sot WHERE total_cases IS NOT NULL) SELECT ROUND(100 * SUM(CASE WHEN lane_type = 'out_of_lane_transport' THEN total_cases END) / SUM(total_cases), 2) AS oor_case_pct FROM cpg_demos.netopt_gold.lane_material_sot, m WHERE year_month = m.ym AND material_number <> 'SHUTTLE' AND total_cases IS NOT NULL"
+    ]
+   },
+   {
+    "id": "20000000000000000000000000000004",
+    "question": [
+     "What actions are recommended for the high risk lanes?"
+    ],
+    "sql": [
+     "SELECT priority_rank, directed_lane_id, origin_name, dest_name, action_type, recommendation, action_owner, expected_monthly_leakage_usd FROM cpg_demos.netopt_gold.lane_action_queue WHERE risk_tier = 'HIGH' ORDER BY priority_rank"
+    ]
+   }
+  ]
+ },
+ "benchmarks": {
+  "questions": [
+   {
+    "id": "40000000000000000000000000000001",
+    "question": [
+     "Total out-of-route leakage in 2026"
+    ],
+    "answer": [
+     {
+      "format": "SQL",
+      "content": [
+       "SELECT ROUND(SUM(total_cost_impact), 0) FROM cpg_demos.netopt_gold.oor_analysis WHERE drill_tab = 'costly_oor' AND year_month >= '2026-01'"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "40000000000000000000000000000002",
+    "question": [
+     "How many HIGH risk lanes are in the action queue?"
+    ],
+    "answer": [
+     {
+      "format": "SQL",
+      "content": [
+       "SELECT COUNT(*) FROM cpg_demos.netopt_gold.lane_action_queue WHERE risk_tier = 'HIGH'"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "40000000000000000000000000000003",
+    "question": [
+     "Top 5 product families by costly out-of-route leakage"
+    ],
+    "answer": [
+     {
+      "format": "SQL",
+      "content": [
+       "SELECT family, ROUND(SUM(total_cost_impact), 0) AS leakage_usd FROM cpg_demos.netopt_gold.oor_analysis WHERE drill_tab = 'costly_oor' GROUP BY family ORDER BY leakage_usd DESC LIMIT 5"
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}

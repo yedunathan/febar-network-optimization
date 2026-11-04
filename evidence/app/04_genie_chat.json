@@ -1,0 +1,55 @@
+{
+ "conversation_id": "01f1d7fa821a1eca89fd442dbf418b99",
+ "text": "You want to see the top 5 lanes with the highest expected monthly leakage in dollars according to the machine learning model. The results include the lane identifier, origin and destination names, risk tier, expected leakage, and realized leakage, all rounded to whole dollars.\nThe **5 lanes with the highest expected monthly leakage** are:\n- **2508-2552** \u2014 Drummondville Plant to Eagan DC: **$46,693/month** expected leakage, **MEDIUM** risk\n- **2508-2542** \u2014 Drummondville Plant to Bolingbrook DC: **$43,001/month** expected leakage, **MEDIUM** risk\n- **2508-2551** \u2014 Drummondville Plant to Columbus DC: **$41,503/month** expected leakage, **MEDIUM** risk\n- **2507-2540** \u2014 Joliet Plant to Atlanta DC: **$36,909/month** expected leakage, **HIGH** risk\n- **2503-2545** \u2014 McAllen Plant to Aurora DC: **$31,931/month** expected leakage, **HIGH** risk\n\nAcross these 5 lanes, expected monthly leakage ranges from **$31,931** to **$46,693**, and **Drummondville Plant** appears on **3 of the 5** highest-risk lanes.",
+ "columns": [
+  "directed_lane_id",
+  "origin_name",
+  "dest_name",
+  "risk_tier",
+  "expected_monthly_leakage_usd",
+  "realized_leakage_usd"
+ ],
+ "rows": [
+  [
+   "2508-2552",
+   "Drummondville Plant",
+   "Eagan DC",
+   "MEDIUM",
+   "46693.0",
+   "180662.0"
+  ],
+  [
+   "2508-2542",
+   "Drummondville Plant",
+   "Bolingbrook DC",
+   "MEDIUM",
+   "43001.0",
+   "55424.0"
+  ],
+  [
+   "2508-2551",
+   "Drummondville Plant",
+   "Columbus DC",
+   "MEDIUM",
+   "41503.0",
+   "87130.0"
+  ],
+  [
+   "2507-2540",
+   "Joliet Plant",
+   "Atlanta DC",
+   "HIGH",
+   "36909.0",
+   "54174.0"
+  ],
+  [
+   "2503-2545",
+   "McAllen Plant",
+   "Aurora DC",
+   "HIGH",
+   "31931.0",
+   "68488.0"
+  ]
+ ],
+ "query": "WITH ranked_lanes AS (\n  SELECT\n    `directed_lane_id`,\n    `origin_name`,\n    `dest_name`,\n    `risk_tier`,\n    ROUND(`expected_monthly_leakage_usd`, 0) AS `expected_monthly_leakage_usd`,\n    ROUND(`realized_leakage_usd`, 0) AS `realized_leakage_usd`,\n    RANK() OVER (ORDER BY `expected_monthly_leakage_usd` DESC) AS `rnk`\n  FROM `cpg_demos`.`netopt_gold`.`lane_watchlist`\n  WHERE `expected_monthly_leakage_usd` IS NOT NULL\n    AND `directed_lane_id` IS NOT NULL\n)\nSELECT\n  `directed_lane_id`,\n  `origin_name`,\n  `dest_name`,\n  `risk_tier`,\n  `expected_monthly_leakage_usd`,\n  `realized_leakage_usd`\nFROM ranked_lanes\nWHERE `rnk` <= 5\nORDER BY `expected_monthly_leakage_usd` DESC, `directed_lane_id` ASC"
+}

@@ -1,0 +1,50 @@
+resources:
+  jobs:
+    netopt_end_to_end:
+      name: netopt-end-to-end
+      description: >
+        Raw synthetic extracts -> Lakeflow (bronze/silver/gold) -> route reconstruction -> Unity Catalog governance
+        -> ML out-of-route cost-risk model -> GenAI reroute recommendations -> Lakebase operational sync -> Genie checks
+      max_concurrent_runs: 1
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+      tasks:
+        - task_key: generate_raw_data
+          notebook_task:
+            notebook_path: ../src/notebooks/01_generate_raw_data.py
+        - task_key: lakeflow_pipeline
+          depends_on: [{task_key: generate_raw_data}]
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.netopt_transform.id}
+            full_refresh: true
+        - task_key: build_material_routes
+          depends_on: [{task_key: lakeflow_pipeline}]
+          notebook_task:
+            notebook_path: ../src/notebooks/02_build_material_routes.py
+        - task_key: unity_catalog_governance
+          depends_on: [{task_key: build_material_routes}]
+          notebook_task:
+            notebook_path: ../src/notebooks/03_unity_catalog_governance.py
+            base_parameters:
+              warehouse_id: ${var.warehouse_id}
+        - task_key: ml_oor_cost_risk
+          depends_on: [{task_key: build_material_routes}]
+          notebook_task:
+            notebook_path: ../src/notebooks/04_ml_oor_cost_risk_model.py
+        - task_key: genai_reroute_recommendations
+          depends_on: [{task_key: ml_oor_cost_risk}]
+          notebook_task:
+            notebook_path: ../src/notebooks/05_genai_reroute_recommendations.py
+        - task_key: lakebase_operational_sync
+          depends_on: [{task_key: genai_reroute_recommendations}, {task_key: unity_catalog_governance}]
+          notebook_task:
+            notebook_path: ../src/notebooks/06_lakebase_operational_sync.py
+            base_parameters:
+              lakebase_project: ${var.lakebase_project}
+        - task_key: genie_validation
+          depends_on: [{task_key: lakebase_operational_sync}]
+          notebook_task:
+            notebook_path: ../src/notebooks/07_genie_validation.py
+            base_parameters:
+              genie_space_id: ${var.genie_space_id}

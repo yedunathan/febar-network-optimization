@@ -1,0 +1,10 @@
+{
+ "lanes": 40,
+ "high_risk_lanes": 12,
+ "queue_monthly_leakage_usd": 861903,
+ "queue_realized_leakage_usd": 1445125,
+ "decided": 0,
+ "approved_monthly_savings_usd": 0,
+ "window_end": "2026-04",
+ "generated_at": "2026-11-04T02:41:46.416706+00:00"
+}

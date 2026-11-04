@@ -1,0 +1,18 @@
+resources:
+  pipelines:
+    netopt_transform:
+      name: netopt-transform-pipeline
+      catalog: ${var.catalog}
+      schema: netopt_silver
+      serverless: true
+      photon: true
+      channel: CURRENT
+      libraries:
+        - file:
+            path: ../src/pipeline/transform_pipeline.py
+      configuration:
+        netopt.catalog: ${var.catalog}
+        netopt.bronze_schema: netopt_bronze
+        netopt.silver_schema: netopt_silver
+        netopt.gold_schema: netopt_gold
+        netopt.landing_path: /Volumes/${var.catalog}/netopt_raw/landing

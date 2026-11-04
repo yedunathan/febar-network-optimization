@@ -1,0 +1,14 @@
+{
+ "rows": [
+  {
+   "action_id": 1,
+   "directed_lane_id": "2507-2540",
+   "decision": "APPROVED",
+   "action_type": "REROUTE_TO_PLAN",
+   "note": "Evidence capture: approved GenAI recommendation for the top HIGH-risk lane",
+   "expected_monthly_savings_usd": 36909.03,
+   "decided_by": "build-user@[redacted]",
+   "decided_at": "2026-11-04T02:50:54.445276+00:00"
+  }
+ ]
+}

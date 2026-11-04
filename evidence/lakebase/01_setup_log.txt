@@ -1,0 +1,64 @@
+# Lakebase setup log — 2026-11-04T01:37:02Z
+$ databricks postgres get-project projects/network-opt
+{
+ "create_time": "2026-11-04T01:29:41Z",
+ "name": "projects/network-opt",
+ "project_id": "network-opt",
+ "status": {
+  "branch_logical_size_limit_bytes": 35184372088832,
+  "default_branch": "projects/network-opt/branches/production",
+  "default_endpoint_settings": {
+   "autoscaling_limit_max_cu": 1,
+   "autoscaling_limit_min_cu": 1,
+   "suspend_timeout_duration": "86400s"
+  },
+  "display_name": "Northstar Network Optimization - operational store",
+  "enable_pg_native_login": false,
+  "history_retention_duration": "604800s",
+  "owner": "build-user@[redacted]",
+  "pg_version": 17,
+  "project_id": "network-opt",
+  "synthetic_storage_size_bytes": 0
+ },
+ "update_time": "2026-11-04T01:29:43Z"
+}
+
+$ databricks postgres create-catalog netopt_lakebase ...
+Error: Principal '[build user]' does not have CREATE CATALOG on Metastore 'metastore_aws_us_east_1'.
+
+Profile:   fe-vm-vdm
+Host:      https://fe-vm-vdm-serverless-jpckvw.cloud.databricks.com
+
+Next steps:
+  - Verify you have the required permissions for this operation
+  - Check your identity: databricks auth describe --profile fe-vm-vdm
+
+# CREATE CATALOG not permitted for this user -> synced tables registered in the standard catalog instead
+$ databricks postgres create-synced-table cpg_demos.netopt_serving.plant_stats (SNAPSHOT)
+{
+  "name": "synced_tables/cpg_demos.netopt_serving.plant_stats",
+  "spec": {
+    "branch": "projects/network-opt/branches/production",
+    "create_database_objects_if_missing": true,
+    "new_pipeline_spec": {
+      "storage_catalog": "cpg_demos",
+      "storage_schema": "netopt_serving"
+    },
+    "postgres_database": "databricks_postgres",
+    "primary_key_columns": [
+      "plant_s4"
+    ],
+    "scheduling_policy": "SNAPSHOT",
+    "source_table_full_name": "cpg_demos.netopt_gold.plant_stats"
+  },
+  "status": {
+    "detailed_state": "SYNCED_TABLE_PROVISIONING_PIPELINE_RESOURCES",
+    "message": "Synced table is currently pending setup of pipeline resources. Check latest status in Delta Live Tables: https://fe-vm-vdm-serverless-jpckvw.cloud.databricks.com#joblist/pipelines/5a2e8c6e-0fb9-48ea-853e-468c0eaf6961/updates/322d3217-b0ae-46eb-9221-e29122baa325",
+    "ongoing_sync_progress": {},
+    "pipeline_id": "5a2e8c6e-0fb9-48ea-853e-468c0eaf6961",
+    "project": "projects/network-opt",
+    "unity_catalog_provisioning_state": "ACTIVE"
+  },
+  "synced_table_id": "cpg_demos.netopt_serving.plant_stats",
+  "uid": "9ea3225d-a85b-4274-afeb-ed280f8117fc"
+}

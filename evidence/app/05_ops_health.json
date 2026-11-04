@@ -1,0 +1,7 @@
+{
+ "lakebase": "ok",
+ "pg_user": "d6934596-b345-4b96-99ee-2607791d1fb8",
+ "pg_version": "PostgreSQL 17.11 (0bfbbeb) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit",
+ "queue_rows": 40,
+ "decisions": 0
+}

@@ -1,0 +1,72 @@
+{
+ "months": [
+  "2025-01",
+  "2025-02",
+  "2025-03",
+  "2025-04",
+  "2025-05",
+  "2025-06",
+  "2025-07",
+  "2025-08",
+  "2025-09",
+  "2025-10",
+  "2025-11",
+  "2025-12",
+  "2026-01",
+  "2026-02",
+  "2026-03",
+  "2026-04"
+ ],
+ "n_plants": 55,
+ "plants_sample": [
+  {
+   "plant_s4": "2501",
+   "plant_ecc": "1501",
+   "plant_name": "Rochester Plant",
+   "plant_type": "MFG",
+   "city": "Rochester",
+   "region": "NY",
+   "country": "US",
+   "lat": "43.1566",
+   "lon": "-77.6088",
+   "inbound_lanes": "0",
+   "outbound_lanes": "44",
+   "inbound_cases": "0",
+   "outbound_cases": "3968948",
+   "top_families": "Frozen Bread Dough, Sweet Dough, Pizza Crust"
+  },
+  {
+   "plant_s4": "2502",
+   "plant_ecc": "1502",
+   "plant_name": "Dayton Plant",
+   "plant_type": "MFG",
+   "city": "Dayton",
+   "region": "OH",
+   "country": "US",
+   "lat": "39.7589",
+   "lon": "-84.1916",
+   "inbound_lanes": "0",
+   "outbound_lanes": "43",
+   "inbound_cases": "0",
+   "outbound_cases": "5467856",
+   "top_families": "Sweet Dough, Cakes & Desserts, Frozen Bread Dough"
+  },
+  {
+   "plant_s4": "2503",
+   "plant_ecc": "1503",
+   "plant_name": "McAllen Plant",
+   "plant_type": "MFG",
+   "city": "McAllen",
+   "region": "TX",
+   "country": "US",
+   "lat": "26.2034",
+   "lon": "-98.23",
+   "inbound_lanes": "0",
+   "outbound_lanes": "42",
+   "inbound_cases": "0",
+   "outbound_cases": "2615618",
+   "top_families": "Pizza Crust, Cakes & Desserts, Sweet Dough"
+  }
+ ],
+ "materials": "2100 items"
+}

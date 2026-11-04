@@ -1,0 +1,20 @@
+command: ["uvicorn", "server.main:app", "--host", "0.0.0.0", "--port", "8000"]
+env:
+  - name: NETOPT_CATALOG
+    value: "cpg_demos"
+  - name: NETOPT_GOLD_SCHEMA
+    value: "netopt_gold"
+  - name: NETOPT_SILVER_SCHEMA
+    value: "netopt_silver"
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: "sql-warehouse"
+  - name: GENIE_SPACE_ID
+    valueFrom: "genie-space"
+  - name: LAKEBASE_SERVING_SCHEMA
+    value: "netopt_serving"
+  - name: LAKEBASE_OPS_SCHEMA
+    value: "netopt_ops"
+  - name: LAKEBASE_ENDPOINT
+    value: "projects/network-opt/branches/production/endpoints/primary"
+  - name: PGDATABASE
+    value: "databricks_postgres"

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ops Console · Out-of-Route Leakage Queue</title>
+<style>
+  :root { --bg:#0b0f19; --panel:rgba(17,24,39,.92); --border:#273349; --text:#e5e7eb; --muted:#8b98ad; --accent:#3b82f6;
+          --high:#ef4444; --med:#f59e0b; --low:#64748b; --ok:#22c55e; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; font-size:14px; }
+  header { display:flex; align-items:center; gap:16px; padding:14px 24px; border-bottom:1px solid var(--border); }
+  header h1 { font-size:17px; margin:0; font-weight:600; }
+  header .sub { color:var(--muted); font-size:12px; }
+  header a { margin-left:auto; color:var(--accent); text-decoration:none; font-size:13px; }
+  main { padding:20px 24px; max-width:1500px; margin:0 auto; }
+  .kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:18px; }
+  .kpi { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+  .kpi .v { font-size:22px; font-weight:650; font-variant-numeric:tabular-nums; }
+  .kpi .l { color:var(--muted); font-size:12px; margin-top:4px; }
+  .kpi.money .v { color:#fca5a5; } .kpi.saved .v { color:#86efac; }
+  .bar { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
+  .bar select, .bar button { background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:7px; padding:6px 10px; font-size:13px; }
+  .bar .src { margin-left:auto; color:var(--muted); font-size:12px; }
+  table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  th, td { padding:9px 10px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; }
+  th { color:var(--muted); font-weight:500; font-size:12px; position:sticky; top:0; background:#111827; }
+  td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  tr.row:hover { background:rgba(59,130,246,.07); cursor:pointer; }
+  .tier { font-size:11px; font-weight:600; padding:2px 7px; border-radius:99px; }
+  .tier.HIGH { background:rgba(239,68,68,.15); color:var(--high); } .tier.MEDIUM { background:rgba(245,158,11,.15); color:var(--med); }
+  .tier.LOW { background:rgba(100,116,139,.2); color:#cbd5e1; }
+  .act { font-family:ui-monospace,Menlo,monospace; font-size:11px; color:#93c5fd; }
+  .rec { color:#cbd5e1; font-size:13px; line-height:1.4; max-width:520px; }
+  .owner { color:var(--muted); font-size:11px; margin-top:3px; }
+  .dec { font-size:11px; font-weight:600; } .dec.APPROVED { color:var(--ok); } .dec.REJECTED { color:var(--high); } .dec.SNOOZED { color:var(--med); }
+  .btns button { border:1px solid var(--border); background:transparent; color:var(--text); border-radius:6px; padding:4px 8px; margin:2px; font-size:12px; cursor:pointer; }
+  .btns button.ap:hover { border-color:var(--ok); color:var(--ok); } .btns button.rj:hover { border-color:var(--high); color:var(--high); }
+  .btns button.sz:hover { border-color:var(--med); color:var(--med); }
+  .lane { font-weight:600; } .lane small { display:block; color:var(--muted); font-weight:400; font-size:12px; }
+  .prob { display:inline-block; width:46px; height:6px; background:#1f2937; border-radius:3px; margin-right:6px; vertical-align:middle; }
+  .prob i { display:block; height:100%; border-radius:3px; background:var(--high); }
+  .err { color:#fca5a5; padding:20px; }
+  #log { margin-top:18px; }
+  #log h2 { font-size:14px; color:var(--muted); font-weight:500; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Ops Console · Out-of-Route Freight Leakage Queue</h1>
+    <div class="sub">ML risk score (UC model <code>oor_cost_risk@champion</code>) + GenAI action · served from Lakebase · decisions written back to Lakebase</div>
+  </div>
+  <a href="/">← Network map</a>
+</header>
+<main>
+  <div class="kpis" id="kpis"></div>
+  <div class="bar">
+    <select id="tier"><option value="">All risk tiers</option><option>HIGH</option><option>MEDIUM</option><option>LOW</option></select>
+    <select id="status"><option value="open">Open</option><option value="">All</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="snoozed">Snoozed</option></select>
+    <button id="refresh">Refresh</button>
+    <span class="src" id="src"></span>
+  </div>
+  <table>
+    <thead><tr>
+      <th>#</th><th>Lane</th><th>Risk</th><th class="num">P(costly)</th><th class="num">Exp. leakage / mo</th>
+      <th class="num">Realised (3 mo)</th><th>Top family</th><th>Recommended action (GenAI)</th><th>Decision</th>
+    </tr></thead>
+    <tbody id="rows"><tr><td colspan="9" style="color:var(--muted)">Loading…</td></tr></tbody>
+  </table>
+  <div id="log"><h2>Recent planner decisions (Lakebase <code>netopt_ops.planner_actions</code>)</h2>
+    <table><thead><tr><th>When</th><th>Lane</th><th>Decision</th><th>Action</th><th class="num">Monthly $ at stake</th><th>By</th><th>Note</th></tr></thead>
+    <tbody id="decisions"></tbody></table></div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const usd = (v) => v == null ? "–" : "$" + Math.round(Number(v)).toLocaleString();
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || r.statusText);
+  return r.json();
+}
+
+async function loadSummary() {
+  const s = await api("/api/ops/summary");
+  $("kpis").innerHTML = [
+    ["money", usd(s.queue_monthly_leakage_usd), "Expected leakage / month in queue (ML)"],
+    ["money", usd(s.queue_realized_leakage_usd), `Realised leakage, trailing 3 mo (to ${esc(s.window_end)})`],
+    ["", `${s.high_risk_lanes} / ${s.lanes}`, "High-risk lanes / lanes in queue"],
+    ["", `${s.decided}`, "Lanes actioned by planners"],
+    ["saved", usd(s.approved_monthly_savings_usd), "Monthly leakage addressed (approved)"],
+  ].map(([c, v, l]) => `<div class="kpi ${c}"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+  $("src").textContent = `Recommendations generated ${new Date(s.generated_at).toLocaleString()}`;
+}
+
+async function loadQueue() {
+  const qs = new URLSearchParams({ tier: $("tier").value, status: $("status").value });
+  for (const [k, v] of [...qs]) if (!v) qs.delete(k);
+  const { rows } = await api("/api/ops/queue?" + qs);
+  $("rows").innerHTML = rows.length ? rows.map((r) => `
+    <tr class="row">
+      <td>${r.priority_rank}</td>
+      <td class="lane">${esc(r.origin_name)} → ${esc(r.dest_name)}<small>${esc(r.directed_lane_id)} · ${r.oor_events} OOR events · ${r.skus} SKUs</small></td>
+      <td><span class="tier ${esc(r.risk_tier)}">${esc(r.risk_tier)}</span></td>
+      <td class="num"><span class="prob"><i style="width:${Math.round(r.avg_p_costly * 100)}%"></i></span>${Number(r.avg_p_costly).toFixed(2)}</td>
+      <td class="num">${usd(r.expected_monthly_leakage_usd)}</td>
+      <td class="num">${usd(r.realized_leakage_usd)}</td>
+      <td>${esc(r.top_family)}</td>
+      <td><div class="act">${esc(r.action_type || "")}</div><div class="rec">${esc(r.recommendation || "–")}</div>
+          <div class="owner">${r.action_owner ? "Owner: " + esc(r.action_owner) : ""}${r.alt_dest_name ? " · planned alt: " + esc(r.alt_dest_name) : ""}</div></td>
+      <td>${r.decision ? `<div class="dec ${r.decision}">${r.decision}</div><div class="owner">${esc(r.decided_by)}</div>` : ""}
+        <div class="btns" data-lane="${esc(r.directed_lane_id)}">
+          <button class="ap" data-d="APPROVED">Approve</button><button class="rj" data-d="REJECTED">Reject</button><button class="sz" data-d="SNOOZED">Snooze</button>
+        </div></td>
+    </tr>`).join("") : `<tr><td colspan="9" style="color:var(--muted)">No lanes match this filter.</td></tr>`;
+}
+
+async function loadDecisions() {
+  const { rows } = await api("/api/ops/decisions?limit=15");
+  $("decisions").innerHTML = rows.map((d) => `<tr><td>${new Date(d.decided_at).toLocaleString()}</td><td>${esc(d.directed_lane_id)}</td>
+    <td class="dec ${d.decision}">${d.decision}</td><td class="act">${esc(d.action_type)}</td><td class="num">${usd(d.expected_monthly_savings_usd)}</td>
+    <td>${esc(d.decided_by)}</td><td>${esc(d.note)}</td></tr>`).join("") || `<tr><td colspan="7" style="color:var(--muted)">No decisions yet.</td></tr>`;
+}
+
+async function refresh() {
+  try { await Promise.all([loadSummary(), loadQueue(), loadDecisions()]); }
+  catch (e) { $("rows").innerHTML = `<tr><td colspan="9" class="err">${esc(e.message)}</td></tr>`; }
+}
+
+$("rows").addEventListener("click", async (ev) => {
+  const b = ev.target.closest("button[data-d]");
+  if (!b) return;
+  const lane = b.parentElement.dataset.lane;
+  const note = b.dataset.d === "APPROVED" ? "" : (prompt(`Note for ${b.dataset.d.toLowerCase()} ${lane} (optional)`) ?? "");
+  b.disabled = true;
+  try {
+    await api("/api/ops/decision", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ directed_lane_id: lane, decision: b.dataset.d, note }) });
+    await refresh();
+  } catch (e) { alert(e.message); b.disabled = false; }
+});
+$("tier").onchange = $("status").onchange = loadQueue;
+$("refresh").onclick = refresh;
+refresh();
+</script>
+</body>
+</html>
