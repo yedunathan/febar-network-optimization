@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""Render deck/*.md (slides separated by '---') to a 16:9 HTML deck, then to PDF with headless Chrome.
-Usage: python deck/render_deck.py"""
+"""Render a deck .md (slides separated by '---') to a 16:9 HTML deck, then to PDF with headless Chrome.
+Usage: python deck/render_deck.py [deck_name]   (default: northstar_oor_freight_leakage_deck)"""
 import html
 import os
 import re
 import subprocess
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(HERE, "northstar_oor_freight_leakage_deck.md")
-OUT_HTML = os.path.join(HERE, "northstar_oor_freight_leakage_deck.html")
-OUT_PDF = os.path.join(HERE, "northstar_oor_freight_leakage_deck.pdf")
+NAME = sys.argv[1] if len(sys.argv) > 1 else "northstar_oor_freight_leakage_deck"
+SRC = os.path.join(HERE, f"{NAME}.md")
+OUT_HTML = os.path.join(HERE, f"{NAME}.html")
+OUT_PDF = os.path.join(HERE, f"{NAME}.pdf")
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 
@@ -76,7 +78,7 @@ def main():
     for n, s in enumerate(slides):
         lines = s.splitlines()
         body = block(lines)
-        cls = "slide title" if n == 0 else "slide"
+        cls = "slide title" if body.startswith("<h1>") else "slide"
         sections.append(f'<section class="{cls}">{body}<div class="foot">Northstar Network Optimization · synthetic data · {n + 1}/{len(slides)}</div></section>')
     css = """
 @page { size: 13.333in 7.5in; margin: 0; }
